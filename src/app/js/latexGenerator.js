@@ -1,7 +1,13 @@
 var generateLatex = function(expr) {
 	var latexString = '';
-	for (var i = 0; i < expr.length; i++) {
-		var wrapper = expr[i];
+    var _expr;
+    if(expr.operands && expr.operands.topLevelContainer){
+        _expr = expr.operands.topLevelContainer;
+    } else {
+        _expr = expr;
+    }
+	for (var i = 0; i < _expr.length; i++) {
+		var wrapper = _expr[i];
 		switch (wrapper.type) {
 			case "Symbol":
 				latexString += symbolToLatex(wrapper);
@@ -51,22 +57,22 @@ var generateLatex = function(expr) {
 			case "Superscript":
 				latexString += superscriptToLatex(wrapper);
 				var endBraces = '';
-				while (typeof expr[i + 1] !== "undefined" && expr[i + 1].type === "Superscript") {
+				while (typeof _expr[i + 1] !== "undefined" && _expr[i + 1].type === "Superscript") {
 					i++;
 					latexString = latexString.substring(0, latexString.length - 1);
 					endBraces += '}';
-					latexString += superscriptToLatex(expr[i]);
+					latexString += superscriptToLatex(_expr[i]);
 				}
 				latexString += endBraces;
 				break;
 			case "Subscript":
 				latexString += subscriptToLatex(wrapper);
 				var endBraces = '';
-				while (typeof expr[i + 1] !== "undefined" && expr[i + 1].type === "Subscript") {
+				while (typeof _expr[i + 1] !== "undefined" && _expr[i + 1].type === "Subscript") {
 					i++;
 					latexString = latexString.substring(0, latexString.length - 1);
 					endBraces += '}';
-					latexString += subscriptToLatex(expr[i]);
+					latexString += subscriptToLatex(_expr[i]);
 				}
 				latexString += endBraces;
 				break;
@@ -75,18 +81,18 @@ var generateLatex = function(expr) {
 				var subscripts = [];
 				superscripts.push(wrapper.operands.superscript);
 				subscripts.push(wrapper.operands.subscript);
-				while (typeof expr[i + 1] !== "undefined" && expr[i + 1].type === "SuperscriptAndSubscript") {
+				while (typeof _expr[i + 1] !== "undefined" && _expr[i + 1].type === "SuperscriptAndSubscript") {
 					i++;
-					superscripts.push(expr[i].operands.superscript);
-					subscripts.push(expr[i].operands.subscript);
+					superscripts.push(_expr[i].operands.superscript);
+					subscripts.push(_expr[i].operands.subscript);
 				}
-				while (typeof expr[i + 1] !== "undefined" && expr[i + 1].type === "Superscript") {
+				while (typeof _expr[i + 1] !== "undefined" && _expr[i + 1].type === "Superscript") {
 					i++;
-					superscripts.push(expr[i].operands.superscript);
+					superscripts.push(_expr[i].operands.superscript);
 				}
-				while (typeof expr[i + 1] !== "undefined" && expr[i + 1].type === "Subscript") {
+				while (typeof _expr[i + 1] !== "undefined" && _expr[i + 1].type === "Subscript") {
 					i++;
-					subscripts.push(expr[i].operands.subscript);
+					subscripts.push(_expr[i].operands.subscript);
 				}
 				var supString = '';
 				var supEndBraces = '';
